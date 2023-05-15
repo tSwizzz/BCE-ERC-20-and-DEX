@@ -20,5 +20,16 @@ describe("Token", () => {
     });
   });
 
-  describe("Transactions", () => {});
+  describe("Transactions", () => {
+    it("Should transfer tokens between accounts", async () => {
+      await token.transfer(addr1.address, 50); //owner transfers to addr1
+      const addr1Balance = await token.balanceOf(addr1.address);
+      expect(addr1Balance).to.equal(50);
+    });
+
+    it("Should not transfer tokens between accounts", async () => {
+      await expect(token.connect(addr1).transfer(addr2.address, 51)).to.be
+        .reverted;
+    });
+  });
 });
