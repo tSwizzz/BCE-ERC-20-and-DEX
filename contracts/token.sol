@@ -1,6 +1,6 @@
 pragma solidity >= 0.4.22 <=0.8.19;
 
-import "@openzeppelin/contract/token/ERC20/ERC20.sol";
+import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
 contract Token is ERC20 { //ERC20 takes name and symbol in constructor
     constructor(uint initialSupply) ERC20("SwizzCoin", "SWZ") {
