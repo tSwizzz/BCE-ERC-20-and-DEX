@@ -9,8 +9,8 @@ contract DEX {
     address owner;
 
     constructor(IERC20 _token, uint _price) {
-        associatedToken = _token;
         owner = msg.sender;
+        associatedToken = _token;
         price = _price;
     }
 
@@ -27,7 +27,7 @@ contract DEX {
     }
 
     function withdrawTokens() external onlyOwner {
-        uint balance = associatedToken.balanceOf(address(this));
+        uint balance = associatedToken.balanceOf(address(this)); //getTokenBalance()
         associatedToken.transfer(msg.sender, balance);
     }
 
