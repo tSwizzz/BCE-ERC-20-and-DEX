@@ -11,7 +11,7 @@ describe("DEX", () => {
   let addr1;
   let addr2;
 
-  beforeEach(async () => {
+  before(async () => {
     [owner, addr1, addr2] = await ethers.getSigners();
     const Token = await ethers.getContractFactory("Token");
     token = await Token.deploy(tokenSupply);
@@ -27,6 +27,18 @@ describe("DEX", () => {
 
     it("Should allow DEX to transfer tokens", async () => {
       await token.approve(dex.address, 100);
+    });
+
+    it("Should not allow non-owner to call sell()", async () => {
+      await expect(dex.connect(addr1).sell()).to.be.reverted;
+    });
+
+    it("Sell should transfer tokens from owner to contract", async () => {
+      await expect(dex.sell()).to.changeTokenBalances(
+        token,
+        [owner.address, dex.address],
+        [-100, 100]
+      );
     });
   });
 
