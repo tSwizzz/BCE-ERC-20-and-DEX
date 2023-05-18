@@ -42,11 +42,56 @@ describe("DEX", () => {
     });
   });
 
-  describe("Getters", () => {});
+  describe("Getters", () => {
+    it("Should return correct token balance", async () => {
+      expect(await dex.getTokenBalance()).to.equal(100);
+    });
 
-  describe("Buy", () => {});
+    it("Should return correct token price", async () => {
+      expect(await dex.getPrice(10)).to.equal(price * 10);
+    });
+  });
 
-  describe("Withdraw tokens", () => {});
+  describe("Buy", () => {
+    it("User can buy tokens", async () => {
+      await expect(
+        dex.connect(addr1).buy(10, { value: 1000 })
+      ).to.changeTokenBalances(token, [dex.address, addr1.address], [-10, 10]);
+    });
 
-  describe("Withdraw funds", () => {});
+    it("User cannot buy invalid number of tokens", async () => {
+      await expect(dex.connect(addr1).buy(91, { value: 9100 })).to.be.reverted;
+    });
+
+    it("User cannot buy with invalid value", async () => {
+      await expect(dex.connect(addr1).buy(5, { value: 510 })).to.be.reverted;
+    });
+  });
+
+  describe("Withdraw tokens", () => {
+    it("Non-owner cannot withdraw tokens", async () => {
+      await expect(dex.connect(addr1).withdrawTokens()).to.be.reverted;
+    });
+
+    it("Owner can withdraw tokens", async () => {
+      await expect(dex.withdrawTokens()).to.changeTokenBalances(
+        token,
+        [dex.address, owner.address],
+        [-90, 90]
+      );
+    });
+  });
+
+  describe("Withdraw funds", () => {
+    it("Owner can withdraw token proceeds", async () => {
+      await expect(dex.withdrawFunds()).to.changeEtherBalances(
+        [owner.address, dex.address],
+        [1000, -1000]
+      );
+    });
+
+    it("Non owner cannot withdraw token proceeds", async () => {
+      await expect(dex.connect(addr1).withdrawFunds()).to.be.reverted;
+    });
+  });
 });
